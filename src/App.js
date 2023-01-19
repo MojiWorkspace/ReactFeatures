@@ -1,5 +1,6 @@
-import React, {useState} from 'react'
+import React, {useState, useMemo} from 'react'
 import ClassCounter from './components/ClassCounter'
+import PostFilter from './components/PostFilter';
 import PostForm from './components/PostForm';
 import PostItem from './components/PostItem';
 import PostList from './components/PostList';
@@ -17,7 +18,18 @@ function App() {
     {id: 5, title: 'Пятый', body: 'рр'}
   ])
 
-  const [selectedSort, setSelectedSort] = useState('')
+  const [filter, setFilter] = useState({sort: '', query: ''})
+
+  const sortedPosts = useMemo( () => {
+    if(filter.sort) {
+      return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
+    }
+    return posts
+  }, [filter.sort, posts])
+
+  const sortedAndSearchedPosts = useMemo( () => {
+      return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query.toLowerCase()))
+  }, [filter.query, sortedPosts])
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost])
@@ -28,32 +40,19 @@ function App() {
     setPosts(posts.filter(p => p.id !== post.id))
   }
 
-  const sortPosts = (sort) => {
-    setSelectedSort(sort);
-    setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])))
-
-  }
 
   return (
     <div className='App'>
       <PostForm create={createPost}/>
+
       <hr style={{margin: '15px'}}/>
-      <div>
-        <MySelect
-          value={selectedSort}
-          onChange={sortPosts}
-          defaultValue='Сотрировка'
-          options={[
-            {value: 'title', name: 'По названию'},
-            {value: 'body', name: 'По описанию'}
-          ]}
-        />
-      </div>
 
+      <PostFilter 
+        filter={filter} 
+        setFilter={setFilter}/>
 
-      {/*Условная отрисовка*/}
-      {posts.length !== 0
-        ? <PostList remove={removePost} posts={posts} title='Посты про JavaScript'/>
+      {sortedAndSearchedPosts.length
+        ? <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Посты про JavaScript'/>
         : <h1 style={{textAlign: 'center'}}>Посты не неайдены</h1>
       }
       
