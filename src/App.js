@@ -1,12 +1,14 @@
 import React, {useState, useMemo} from 'react'
-import ClassCounter from './components/ClassCounter'
+//import ClassCounter from './components/ClassCounter'
 import PostFilter from './components/PostFilter';
 import PostForm from './components/PostForm';
-import PostItem from './components/PostItem';
+//import PostItem from './components/PostItem';
 import PostList from './components/PostList';
 import MyButton from './components/UI/button/MyButton';
-import MyInput from './components/UI/input/MyInput';
-import MySelect from './components/UI/select/MySelect';
+//import MyButton from './components/UI/button/MyButton';
+//import MyInput from './components/UI/input/MyInput';
+import MyModal from './components/UI/modal/MyModal';
+//import MySelect from './components/UI/select/MySelect';
 import './styles/App.css'
 
 function App() {
@@ -19,6 +21,7 @@ function App() {
   ])
 
   const [filter, setFilter] = useState({sort: '', query: ''})
+  const [modal, setModal] = useState(false)
 
   const sortedPosts = useMemo( () => {
     if(filter.sort) {
@@ -33,6 +36,7 @@ function App() {
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost])
+    setModal(false)
   }
 
   //Получаем post из дочернего компонента
@@ -43,7 +47,13 @@ function App() {
 
   return (
     <div className='App'>
-      <PostForm create={createPost}/>
+      <MyButton style={{marginTop: 30}}onClick={() => setModal(true)}>
+        Создать пост
+      </MyButton>
+      <MyModal visible={modal} setVisible={setModal}>
+        <PostForm create={createPost}/>
+      </MyModal>
+      
 
       <hr style={{margin: '15px'}}/>
 
