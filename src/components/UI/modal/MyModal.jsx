@@ -1,7 +1,6 @@
 
 import React from 'react';
 import cl from './MyModal.module.css';
-/*Создание поста*/
 const MyModal = ({children, visible, setVisible}) => {
 
     const rootClasses = [cl.myModal]
