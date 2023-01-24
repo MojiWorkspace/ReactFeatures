@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react'
+import React, {useState, useMemo, useEffect} from 'react'
 import PostFilter from './components/PostFilter';
 import PostForm from './components/PostForm';
 import PostList from './components/PostList';
@@ -7,6 +7,7 @@ import MyModal from './components/UI/modal/MyModal';
 import { usePosts } from './hooks/usePosts';
 import axios from 'axios';
 import './styles/App.css'
+import PostServise from './API/PostServise';
 
 function App() {
   const  [posts, setPosts] = useState([
@@ -20,6 +21,11 @@ function App() {
   const [filter, setFilter] = useState({sort: '', query: ''})
   const [modal, setModal] = useState(false)
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+  const [isPostLoading, setIsPostLoading]= useState(false)
+
+  useEffect(() => {
+    fetchPosts()
+  }, []) 
 
 
 
@@ -31,8 +37,13 @@ function App() {
   }
 
   async function fetchPosts (){
-    const response = await axios.get('https://jsonplaceholder.typicode.com/posts')
-    setPosts(response.data)
+    setIsPostLoading(true)
+    setTimeout( async () => {
+      const posts = await PostServise.getAll()
+      setPosts(posts)
+      setIsPostLoading(false)
+    }, 2000)
+    
   }
 
   //Получаем post из дочернего компонента
@@ -61,12 +72,18 @@ function App() {
 
       <PostFilter 
         filter={filter} 
-        setFilter={setFilter}/>
+        setFilter={setFilter}
+      />
 
-      {sortedAndSearchedPosts.length
-        ? <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Посты про JavaScript'/>
-        : <h1 style={{textAlign: 'center'}}>Посты не неайдены</h1>
+      {isPostLoading 
+        ? <h2>Идет загрузка записей...</h2>
+        : <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Список различных записей'/>
       }
+
+      {/* {sortedAndSearchedPosts.length
+        ? <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Список различных записей'/>
+        : <h1 style={{textAlign: 'center'}}>Посты не неайдены</h1>
+      } */}
       
     </div>
   );
