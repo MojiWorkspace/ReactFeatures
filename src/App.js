@@ -8,6 +8,7 @@ import { usePosts } from './hooks/usePosts';
 import axios from 'axios';
 import './styles/App.css'
 import PostServise from './API/PostServise';
+import Loader from './components/UI/loader/Loader';
 
 function App() {
   const  [posts, setPosts] = useState([
@@ -26,9 +27,6 @@ function App() {
   useEffect(() => {
     fetchPosts()
   }, []) 
-
-
-
 
 
   const createPost = (newPost) => {
@@ -76,7 +74,7 @@ function App() {
       />
 
       {isPostLoading 
-        ? <h2>Идет загрузка записей...</h2>
+        ? <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
         : <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Список различных записей'/>
       }
 
